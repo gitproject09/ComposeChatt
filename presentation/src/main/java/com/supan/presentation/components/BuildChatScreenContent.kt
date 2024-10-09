@@ -3,8 +3,17 @@ package com.supan.presentation.components
 import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.Slider
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.PauseCircle
@@ -30,27 +39,33 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 import coil.size.Size
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.supan.domain.model.ChatModel
 import com.supan.presentation.R
 import com.supan.presentation.ui.view_models.ApplicationViewModel
 import com.supan.presentation.ui.view_models.AuthViewModel
 import com.supan.presentation.ui.view_models.ChatPageViewModel
-import com.supan.presentation.utiles.*
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.ui.StyledPlayerView
+import com.supan.presentation.utiles.getDuration
+import com.supan.presentation.utiles.hasPermissions
+import com.supan.presentation.utiles.maxVal
+import com.supan.presentation.utiles.minVal
+import com.supan.presentation.utiles.myDir
+import com.supan.presentation.utiles.root
+import com.supan.presentation.utiles.storagePermissions
+import com.supan.presentation.utiles.voiceMessage
 import java.io.File
-
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-  fun BuildChatScreenContent(
+fun BuildChatScreenContent(
     chatPageViewModel: ChatPageViewModel,
     index: Int,
     messages: ChatModel,
     authViewModel: AuthViewModel,
     applicationViewModel: ApplicationViewModel = hiltViewModel(),
-    onFileClick:(fileUrl:String,fileName:String)->Unit
+    onFileClick: (fileUrl: String, fileName: String) -> Unit
 ) {
     when (chatPageViewModel.messagesState.value.messages[index].messageType) {
         "text" -> {
@@ -69,6 +84,7 @@ import java.io.File
             }
 
         }
+
         "image" -> {
             MessageRow(messages, authViewModel) {
 
@@ -105,6 +121,7 @@ import java.io.File
 
 
         }
+
         "gif" -> {
             val context = applicationViewModel.application
             val imageLoader = ImageLoader.Builder(context)
@@ -147,15 +164,18 @@ import java.io.File
 
 
         }
+
         "document", "pdf", "audio" -> {
             MessageRow(messages, authViewModel) {
                 Row(
-                    Modifier.padding(top = 10.dp, start = 10.dp, end = 10.dp).clickable {
-                       onFileClick(
-                           chatPageViewModel.messagesState.value.messages[index].messageFile.toString(),
-                           chatPageViewModel.messagesState.value.messages[index].messageText.toString()
-                       )
-                    },
+                    Modifier
+                        .padding(top = 10.dp, start = 10.dp, end = 10.dp)
+                        .clickable {
+                            onFileClick(
+                                chatPageViewModel.messagesState.value.messages[index].messageFile.toString(),
+                                chatPageViewModel.messagesState.value.messages[index].messageText.toString()
+                            )
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(Icons.Filled.AttachFile, "AttachFile")
@@ -169,6 +189,7 @@ import java.io.File
                 }
             }
         }
+
         "video" -> {
             val context = LocalContext.current
             val exoPlayer = remember(context) {
@@ -201,16 +222,17 @@ import java.io.File
                 })
             }
         }
+
         "record" -> {
             if (!myDir.exists())
                 myDir.mkdirs()
             val list = myDir.listFiles()
             MessageRow(messages, authViewModel) {
-                Row (
+                Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceAround,
 
-                    ){
+                    ) {
                     Surface(
                         onClick = {
                             chatPageViewModel.selectedIndex.value = index
@@ -224,15 +246,14 @@ import java.io.File
                         },
                         color = Color.Transparent
                     ) {
-                        if(chatPageViewModel.selectedIndex.value != index) {
+                        if (chatPageViewModel.selectedIndex.value != index) {
                             Icon(
                                 imageVector = Icons.Default.PlayCircle,
                                 contentDescription = "",
                                 Modifier.size(30.dp)
                             )
 
-                        }
-                        else
+                        } else
                             Icon(
                                 imageVector = Icons.Default.PauseCircle,
                                 contentDescription = "",
@@ -240,7 +261,7 @@ import java.io.File
                             )
 
                     }
-                    if(chatPageViewModel.selectedIndex.value == index)
+                    if (chatPageViewModel.selectedIndex.value == index)
                         Slider(
                             value = chatPageViewModel.sliderPosition.value,
                             valueRange = 0.0f..maxVal.toFloat(),
@@ -251,12 +272,12 @@ import java.io.File
                             valueRange = 0.0f..0f,
                             onValueChange = { })
                 }
-                if(chatPageViewModel.selectedIndex.value == index)
+                if (chatPageViewModel.selectedIndex.value == index)
                     Row(
                         horizontalArrangement = Arrangement.SpaceAround,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        if(minVal =="0") Text(text = "00:00") else Text(text = minVal)
+                        if (minVal == "0") Text(text = "00:00") else Text(text = minVal)
                         ShowVoiceDuration(messages, applicationViewModel)
                     }
                 else
@@ -271,8 +292,6 @@ import java.io.File
 
 
             }
-
-
 
 
         }
@@ -290,23 +309,24 @@ private fun ShowVoiceDuration(
                 text = getDuration(
                     "$root/Compose Chat/Compose Recorders/${messages.messageText}",
                     applicationViewModel.application,
-                null).toString()
+                    null
+                ).toString()
             )
         else
             Text(
                 text = getDuration(
                     "$root/Compose Chat/Compose Recorders/${messages.messageText}",
                     applicationViewModel.application,
-                    messages.messageFile).toString()
+                    messages.messageFile
+                ).toString()
             )
-    }
-
-    else
+    } else
         Text(
             text = getDuration(
                 "$root/Compose Chat/Compose Recorders/${messages.messageText}",
                 applicationViewModel.application,
-                messages.messageFile).toString()
+                messages.messageFile
+            ).toString()
         )
 }
 

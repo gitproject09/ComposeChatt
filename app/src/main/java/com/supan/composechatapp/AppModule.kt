@@ -39,8 +39,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideProfileBuilder(): UserProfileChangeRequest.Builder =
-        UserProfileChangeRequest.Builder()
+    fun provideProfileBuilder(): UserProfileChangeRequest.Builder = UserProfileChangeRequest.Builder()
 
     @Provides
     @Singleton

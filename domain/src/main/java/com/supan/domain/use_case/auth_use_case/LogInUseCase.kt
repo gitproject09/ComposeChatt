@@ -9,15 +9,15 @@ import javax.inject.Inject
 
 class LogInUseCase @Inject constructor(private val authRepository: AuthRepository) {
 
-    operator fun invoke(email: String, password: String):Flow<Resource<String>> = flow{
+    operator fun invoke(email: String, password: String): Flow<Resource<String>> = flow {
 
         try {
             emit(Resource.Loading<String>())
-            authRepository.signIn(email,password).collect{
+            authRepository.signIn(email, password).collect {
                 emit(Resource.Success<String>(it))
             }
 
-        }catch (e:Exception){
+        } catch (e: Exception) {
             emit(Resource.Error<String>(e.localizedMessage))
         }
         delay(100)

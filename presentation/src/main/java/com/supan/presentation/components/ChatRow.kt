@@ -3,7 +3,12 @@ package com.supan.presentation.components
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -18,7 +23,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.supan.presentation.ui.view_models.AuthViewModel
-
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
@@ -40,15 +44,17 @@ fun ChatRow(
             },
 
         ) {
-        Row (
+        Row(
             verticalAlignment = Alignment.CenterVertically,
 
-            ){
+            ) {
 
             Row(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(vertical = 10.dp, horizontal = 5.dp).weight(1F),
+                modifier = Modifier
+                    .padding(vertical = 10.dp, horizontal = 5.dp)
+                    .weight(1F),
 
                 ) {
 

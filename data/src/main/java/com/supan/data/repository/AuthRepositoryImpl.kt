@@ -2,8 +2,6 @@ package com.supan.data.repository
 
 import android.annotation.SuppressLint
 import android.util.Log
-import com.supan.domain.model.UsersModel
-import com.supan.domain.repository.AuthRepository
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -11,6 +9,8 @@ import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.supan.domain.model.UsersModel
+import com.supan.domain.repository.AuthRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -20,47 +20,51 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
-    private val fireStore : FirebaseFirestore,
-    private val profileUpdates:UserProfileChangeRequest.Builder,
+    private val fireStore: FirebaseFirestore,
+    private val profileUpdates: UserProfileChangeRequest.Builder,
     private val userModel: UsersModel,
-    ): AuthRepository {
+) : AuthRepository {
 
-     @SuppressLint("SuspiciousIndentation")
-     override fun signUp(firstName: String, lastName: String, email: String, password: String):Flow<String> = flow{
+    @SuppressLint("SuspiciousIndentation")
+    override fun signUp(
+        firstName: String,
+        lastName: String,
+        email: String,
+        password: String
+    ): Flow<String> = flow {
 
-       val createUser: Task<AuthResult> =  firebaseAuth.createUserWithEmailAndPassword(email, password)
-            if (createUser.await().user!=null)
-                userProfile(firstName, lastName, email).collect{
-                    emit(it)
-
-                }
-            else
-                emit(createUser.exception!!.localizedMessage!!.toString())
+        val createUser: Task<AuthResult> =
+            firebaseAuth.createUserWithEmailAndPassword(email, password)
+        if (createUser.await().user != null)
+            userProfile(firstName, lastName, email).collect {
+                emit(it)
+            }
+        else
+            emit(createUser.exception!!.localizedMessage!!.toString())
     }
 
-    override fun signIn(email: String, password: String):Flow<String> = flow{
+    override fun signIn(email: String, password: String): Flow<String> = flow {
 
-        val logInUser: Task<AuthResult> =  firebaseAuth.signInWithEmailAndPassword(email, password)
-        if (logInUser.await().user!=null)
+        val logInUser: Task<AuthResult> = firebaseAuth.signInWithEmailAndPassword(email, password)
+        if (logInUser.await().user != null)
             emit("Sign In Successful")
         else
             emit(logInUser.exception!!.localizedMessage!!.toString())
     }
 
 
+    private fun userProfile(firstName: String, lastName: String, email: String): Flow<String> =
+        flow {
+            try {
+                if (firebaseAuth.currentUser != null) {
 
-
-    private fun userProfile(firstName: String, lastName: String, email: String):Flow<String> = flow{
-
-        try {
-            if (firebaseAuth.currentUser != null) {
-
-                val updateUserName = profileUpdates.setDisplayName("$firstName $lastName").build()
-                coroutineScope {
-                    val job = async{
-                        firebaseAuth.currentUser!!.updateProfile(updateUserName)
-                    }
-                    job.await()
+                    val updateUserName =
+                        profileUpdates.setDisplayName("$firstName $lastName").build()
+                    coroutineScope {
+                        val job = async {
+                            firebaseAuth.currentUser!!.updateProfile(updateUserName)
+                        }
+                        job.await()
                         userModel.name = "$firstName $lastName"
                         userModel.email = email
                         userModel.userId = firebaseAuth.currentUser!!.uid
@@ -68,34 +72,30 @@ class AuthRepositoryImpl @Inject constructor(
                         userModel.lastSeen = FieldValue.serverTimestamp()
                         userModel.imageProfile = ""
                         fireStore.collection("users").add(userModel)
-                       emit("Signed up Success, Welcome")
+                        emit("Signed up Success, Welcome")
 
+                    }
                 }
+            } catch (e: Exception) {
+                emit(e.localizedMessage!!.toString())
             }
-        }catch (e:Exception){
-            emit(e.localizedMessage!!.toString())
         }
 
-
-
-    }
-
-    override fun updateUserStatus(userStatus:String, lastSeen: Any?){
-        val docRef: Query = fireStore.collection("users").whereEqualTo("userId",firebaseAuth.currentUser!!.uid)
+    override fun updateUserStatus(userStatus: String, lastSeen: Any?) {
+        val docRef: Query = fireStore.collection("users").whereEqualTo("userId", firebaseAuth.currentUser!!.uid)
         docRef.get().addOnSuccessListener { documents ->
             val list: MutableList<String> = ArrayList()
             for (document in documents) {
 
                 list.add(document.id)
             }
-            if (lastSeen == null){
+            if (lastSeen == null) {
                 // mean user is online
                 for (id in list) {
                     fireStore.collection("users").document(id).update("type", userStatus)
                         .addOnSuccessListener { Log.d("ChatActivity", "type Updated!") }
                 }
-            }
-            else{
+            } else {
                 for (id in list) {
                     fireStore.collection("users").document(id).update("type", userStatus)
                         .addOnSuccessListener { Log.d("ChatActivity", "type Updated!") }
@@ -106,7 +106,7 @@ class AuthRepositoryImpl @Inject constructor(
 
         }
             .addOnFailureListener { exception ->
-                Log.d("ChatActivity", "Error getting documents: $exception",)
+                Log.d("ChatActivity", "Error getting documents: $exception")
             }
     }
 

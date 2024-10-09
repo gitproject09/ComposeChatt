@@ -23,7 +23,6 @@ class MessageRepositoryImpl @Inject constructor(
     private val myNotificationManager : MyNotificationManager
 ) : MessageRepository {
 
-
     override fun sendMessage(
         chatId: String,
         messageSenderId: String?,
@@ -56,8 +55,6 @@ class MessageRepositoryImpl @Inject constructor(
         )
     }
 
-
-
     override fun getMessages(
         chatId: String,
         fireBaseResponse: (Resource<List<ChatModel>>) -> Unit
@@ -68,10 +65,9 @@ class MessageRepositoryImpl @Inject constructor(
             .addSnapshotListener { querySnapshot, error ->
                 if (error != null) {
                     Log.d("TAG", "Listen failed.", error)
-                    fireBaseResponse(Resource.Error<List<ChatModel>>(error.localizedMessage!!.toString()))
+                    fireBaseResponse(Resource.Error(error.localizedMessage!!.toString()))
                     return@addSnapshotListener
                 }
-
 
                 fireBaseResponse(
                     Resource.Success<List<ChatModel>>(
@@ -80,10 +76,7 @@ class MessageRepositoryImpl @Inject constructor(
                         )
                     )
                 )
-
             }
-
-
     }
 
     override fun uploadFile(
@@ -134,8 +127,6 @@ class MessageRepositoryImpl @Inject constructor(
             }
             .addOnCompleteListener {
                 myNotificationManager.createUploadMediaNotification(null,true)
-
-
             }
 
     }

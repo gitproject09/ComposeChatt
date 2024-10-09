@@ -1,19 +1,20 @@
 package com.supan.data.repository
 
 import android.util.Log
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.snapshots
 import com.supan.domain.model.UsersModel
 import com.supan.domain.repository.UsersRepository
 import com.supan.domain.utils.Resource
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.snapshots
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class UsersRepositoryImpl @Inject constructor(
-    private val fireStore: FirebaseFirestore): UsersRepository {
+    private val fireStore: FirebaseFirestore
+) : UsersRepository {
 
-
-    override fun getUsers() : Flow<MutableList<UsersModel>>  {
+    override fun getUsers(): Flow<MutableList<UsersModel>> {
         return fireStore.collection("users")
             .snapshots()
             .map { querySnapshot ->
@@ -21,9 +22,9 @@ class UsersRepositoryImpl @Inject constructor(
             }
     }
 
-    override fun getUser(userId:String,fireBaseResponse:(Resource<List<UsersModel>>)->Unit)  {
-         fireStore.collection("users")
-            .whereEqualTo("userId",userId)
+    override fun getUser(userId: String, fireBaseResponse: (Resource<List<UsersModel>>) -> Unit) {
+        fireStore.collection("users")
+            .whereEqualTo("userId", userId)
             .addSnapshotListener { querySnapshot, error ->
                 if (error != null) {
                     Log.d("TAG", "Listen failed.", error)
@@ -31,8 +32,13 @@ class UsersRepositoryImpl @Inject constructor(
                     return@addSnapshotListener
                 }
 
-                fireBaseResponse(Resource.Success<List<UsersModel>>(querySnapshot!!.toObjects(UsersModel::class.java)))
-
+                fireBaseResponse(
+                    Resource.Success<List<UsersModel>>(
+                        querySnapshot!!.toObjects(
+                            UsersModel::class.java
+                        )
+                    )
+                )
             }
     }
 

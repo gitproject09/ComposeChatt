@@ -13,6 +13,7 @@ import com.google.firebase.storage.UploadTask
 import javax.inject.Inject
 
 class MyNotificationManager @Inject constructor(private val mCtx: Application) {
+
     fun createUploadMediaNotification(progress: UploadTask.TaskSnapshot?, isFinished: Boolean) {
 
         val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)

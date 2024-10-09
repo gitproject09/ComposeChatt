@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class UpdateUserStatusUseCase @Inject constructor(private val authRepository: AuthRepository) {
 
-    operator fun invoke(userStatus:String, lastSeen: Any?)=
+    operator fun invoke(userStatus: String, lastSeen: Any?) =
         authRepository.updateUserStatus(userStatus, lastSeen)
 
 }

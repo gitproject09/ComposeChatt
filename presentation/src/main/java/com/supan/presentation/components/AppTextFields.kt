@@ -2,7 +2,10 @@ package com.supan.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.*
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -12,14 +15,14 @@ import com.supan.presentation.theme.Purple500
 
 @Composable
 fun AppOutlinedTextField(
-    modifier : Modifier,
+    modifier: Modifier,
     value: String,
-    onValueChange:(String)->Unit,
-    hint : String,
-    hintColor : Color,
-    focusedBorderColor : Color,
-    unfocusedBorderColor : Color,
-){
+    onValueChange: (String) -> Unit,
+    hint: String,
+    hintColor: Color,
+    focusedBorderColor: Color,
+    unfocusedBorderColor: Color,
+) {
     OutlinedTextField(
         modifier = modifier,
         value = value,
@@ -35,17 +38,17 @@ fun AppOutlinedTextField(
 
 @Composable
 fun AppOutlinedTextFieldPassword(
-    modifier : Modifier,
+    modifier: Modifier,
     value: String,
-    onValueChange:(String)->Unit,
-    hint : String,
-    hintColor : Color,
-    focusedBorderColor : Color,
-    unfocusedBorderColor : Color,
-    visualTransformation : VisualTransformation,
+    onValueChange: (String) -> Unit,
+    hint: String,
+    hintColor: Color,
+    focusedBorderColor: Color,
+    unfocusedBorderColor: Color,
+    visualTransformation: VisualTransformation,
     trailingIcon: @Composable() (() -> Unit)
 
-){
+) {
     OutlinedTextField(
         modifier = modifier,
         value = value,
@@ -62,22 +65,23 @@ fun AppOutlinedTextFieldPassword(
 
 @Composable
 fun SearchTextField(
-    modifier : Modifier,
+    modifier: Modifier,
     value: String,
-    onValueChange:(String)->Unit,
-    placeholder: @Composable()()->Unit,
+    onValueChange: (String) -> Unit,
+    placeholder: @Composable() () -> Unit,
     trailingIcon: @Composable() () -> Unit,
-){
+) {
     TextField(
         modifier = modifier
-        .fillMaxWidth().background(Purple500),
+            .fillMaxWidth()
+            .background(Purple500),
         value = value,
-        onValueChange = onValueChange ,
+        onValueChange = onValueChange,
         placeholder = placeholder,
         singleLine = true,
         trailingIcon = trailingIcon,
         textStyle = TextStyle(
             color = Color.White
         ),
-        )
+    )
 }

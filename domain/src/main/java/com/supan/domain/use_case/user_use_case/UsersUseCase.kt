@@ -9,21 +9,16 @@ import javax.inject.Inject
 
 class UsersUseCase @Inject constructor(private val usersRepository: UsersRepository) {
 
-    operator fun invoke():Flow<Resource<List<UsersModel>>> = flow{
+    operator fun invoke(): Flow<Resource<List<UsersModel>>> = flow {
 
         try {
-           emit(Resource.Loading<List<UsersModel>>())
-
-
-            usersRepository.getUsers().collect{
+            emit(Resource.Loading<List<UsersModel>>())
+            usersRepository.getUsers().collect {
                 emit(Resource.Success<List<UsersModel>>(it))
             }
 
-        }catch (e:Exception){
+        } catch (e: Exception) {
             emit(Resource.Error<List<UsersModel>>(e.localizedMessage))
         }
-
     }
-
-
 }

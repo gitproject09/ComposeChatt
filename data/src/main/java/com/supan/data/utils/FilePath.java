@@ -1,6 +1,5 @@
 package com.supan.data.utils;
 
-
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -27,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.Comparator;
-
 
 public class FilePath {
     public static final String DOCUMENTS_DIR = "documents";
@@ -321,7 +319,7 @@ public class FilePath {
                         if (path != null) {
                             return path;
                         }
-                    } catch (Exception e) {}
+                    } catch (Exception ignored) {}
                 }
 
                 // path could not be retrieved using ContentResolver, therefore copy file to accessible cache using streams
@@ -388,7 +386,7 @@ public class FilePath {
     public static File getFile(Context context, Uri uri) {
         if (uri != null) {
             String path = getPath(context, uri);
-            if (path != null && isLocal(path)) {
+            if (isLocal(path)) {
                 return new File(path);
             }
         }
@@ -423,7 +421,7 @@ public class FilePath {
                 }
             }
         }
-        return String.valueOf(dec.format(fileSize) + suffix);
+        return dec.format(fileSize) + suffix;
     }
 
     /**
@@ -548,7 +546,6 @@ public class FilePath {
             }
         }
 
-
         try {
             if (!file.createNewFile()) {
                 return null;
@@ -610,11 +607,8 @@ public class FilePath {
                     e.printStackTrace();
                 }
             }
-
         }
-
         return bytesArray;
-
     }
 
     public static File createTempImageFile(Context context, String fileName) throws IOException {
@@ -627,17 +621,12 @@ public class FilePath {
         String mimeType = context.getContentResolver().getType(uri);
         String filename = null;
 
-        if (mimeType == null && context != null) {
+        if (mimeType == null) {
             String path = getPath(context, uri);
-            if (path == null) {
-                filename = getName(uri.toString());
-            } else {
-                File file = new File(path);
-                filename = file.getName();
-            }
+            File file = new File(path);
+            filename = file.getName();
         } else {
-            Cursor returnCursor = context.getContentResolver().query(uri, null,
-                    null, null, null);
+            Cursor returnCursor = context.getContentResolver().query(uri, null, null, null, null);
             if (returnCursor != null) {
                 int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
                 returnCursor.moveToFirst();
@@ -645,7 +634,6 @@ public class FilePath {
                 returnCursor.close();
             }
         }
-
         return filename;
     }
 

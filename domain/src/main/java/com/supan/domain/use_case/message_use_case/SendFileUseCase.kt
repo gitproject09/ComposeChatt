@@ -6,13 +6,12 @@ import javax.inject.Inject
 
 class SendFileUseCase @Inject constructor(private val messageRepository: MessageRepository) {
 
-
     operator fun invoke(
         chatId: String,
         messageSenderId: String?,
         messageReceiverId: String?,
-        messageSenderName: String? ,
-        messageReceiverName: String? ,
+        messageSenderName: String?,
+        messageReceiverName: String?,
         fileType: String,
         fileUri: Any,
     ) =
@@ -25,6 +24,4 @@ class SendFileUseCase @Inject constructor(private val messageRepository: Message
             fileType,
             fileUri,
         )
-
-
 }

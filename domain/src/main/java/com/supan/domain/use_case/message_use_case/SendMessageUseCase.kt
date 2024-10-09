@@ -6,7 +6,6 @@ import javax.inject.Inject
 
 class SendMessageUseCase @Inject constructor(private val messageRepository: MessageRepository) {
 
-
     operator fun invoke(
         chatId: String,
         messageSenderId: String?,
@@ -23,6 +22,4 @@ class SendMessageUseCase @Inject constructor(private val messageRepository: Mess
             messageReceiverName,
             messageText
         )
-
-
 }

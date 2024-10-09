@@ -18,7 +18,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.supan.presentation.ui.view_models.HomeScreenViewModel
 
-
 @Composable
 fun BottomBar(
     homeScreenViewModel: HomeScreenViewModel = hiltViewModel(),
@@ -26,7 +25,7 @@ fun BottomBar(
 
 ) {
     val navBackStackEntry by bottomBarNavController.currentBackStackEntryAsState()
-    val currentRoute  = navBackStackEntry?.destination?.route
+    val currentRoute = navBackStackEntry?.destination?.route
     BottomNavigation(
         elevation = 10.dp,
         modifier = Modifier
@@ -53,8 +52,6 @@ fun BottomBar(
                     }
                 })
         }
-
-
     }
 }
 
